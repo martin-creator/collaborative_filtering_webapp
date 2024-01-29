@@ -35,6 +35,8 @@ class Rating(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+    active = models.BooleanField(default=True)
+    active_update_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     objects = RatingManager() # Rating.objects.all().rating()

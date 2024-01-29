@@ -16,4 +16,4 @@ class Movie(models.Model):
         return self.ratings.all().count()
     
     def calculate_ratings_avg(self):
-        return self.ratings.avg()
+        return self.ratings.all().avg()
