@@ -1,11 +1,23 @@
 from faker import Faker
 import csv
+from pprint import pprint
 from  django.conf import settings
 
-fake = Faker()
+MOVIE_METADATA_CSV = settings.DATA_DIR / "movies_metadata.csv"
+
+def load_movie_data(limit=10):
+    '''Load movie data from csv file'''
+    with open(MOVIE_METADATA_CSV, encoding='utf-8', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for i, row in enumerate(reader):
+            if i == limit:
+                break
+            pprint(row)
+            print('-------------------')
 
 
 def get_fake_profiles(count=10):
+    '''Generate fake profiles'''
     fake = Faker()
     user_data = []
 
