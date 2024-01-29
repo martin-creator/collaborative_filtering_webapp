@@ -1,4 +1,6 @@
 from faker import Faker
+import csv
+from  django.conf import settings
 
 fake = Faker()
 
