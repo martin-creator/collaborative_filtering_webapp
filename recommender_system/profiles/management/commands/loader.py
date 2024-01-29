@@ -2,6 +2,7 @@ from typing import Any
 from django.core.management.base import BaseCommand, CommandParser
 from django.contrib.auth import get_user_model
 from recommender_system import utils as rs_utils
+from movies.models import Movie
 
 
 User = get_user_model() # get the currently active user model,
@@ -24,8 +25,12 @@ class Command(BaseCommand):
        generate_users = options['users']
        
        if load_movies:
-           rs_utils.load_movie_data(limit=count)
-           return self.stdout.write(self.style.SUCCESS(f'Loaded {count} movies'))
+           movie_dataset = rs_utils.load_movie_data(limit=count)
+           movies_new = [Movie(**x) for x in movie_dataset]
+           movies_bulk = Movie.objects.bulk_create(movies_new, ignore_conflicts=True)
+           print(f'Created {len(movies_bulk)} movies')
+           if show_total:
+               self.stdout.write(self.style.SUCCESS(f'Total movies: {Movie.objects.count()}'))
        
        if generate_users:
             profiles = rs_utils.get_fake_profiles(count=count)
