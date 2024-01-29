@@ -26,3 +26,5 @@ class Command(BaseCommand):
        self.stdout.write(self.style.SUCCESS(f'Created {len(user_bulk)} users'))
        if show_total:
               self.stdout.write(self.style.SUCCESS(f'Total users: {User.objects.count()}'))
+
+        
