@@ -4,7 +4,8 @@ from ratings.models import Rating
 from django.utils import timezone
 import datetime
 
-# Create your models here.
+
+RATING_CALC_TIME = 1
 
 class Movie(models.Model):
     title = models.CharField(max_length=255, unique=True)
@@ -18,13 +19,10 @@ class Movie(models.Model):
 
     def rating_avg_display(self):
         now = timezone.now()
-
         if not self.rating_last_updated:
             return self.calculate_ratings()
-        
-        if now > datetime.timedelta(minutes=1):
+        if self.rating_last_updated > now - datetime.timedelta(minutes=RATING_CALC_TIME):
             return self.rating_avg
-
         return self.calculate_ratings()
     
     def calculate_ratings_count(self):
