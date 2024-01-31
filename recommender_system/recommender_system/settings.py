@@ -41,12 +41,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites'
     'django_celery_beat', # scheduler
     'django_celery_results', # saves the results of the tasks
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'profiles',
     'movies',
     'ratings', 
 ]
+
+SITE_ID = 1 # this is the default value if we don't specify it in settings.py of django project
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_REQUIRED = None
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
