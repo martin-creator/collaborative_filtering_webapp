@@ -3,6 +3,8 @@ from django.db import models
 from django.db.models import Avg
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_save
+from django.utils import timezone
 
 
 # Create your models here.
@@ -41,5 +43,25 @@ class Rating(models.Model):
 
     objects = RatingManager() # Rating.objects.all().rating()
 
+    class Meta:
+        ordering = ['-timestamp']
+
     def __str__(self):
         return f'{self.user.username} rated {self.movie.title} {self.stars} stars'
+    
+def rating_post_save(sender, instance, created, *args, **kwargs):
+    if created:
+        _id = instance.id
+        if instance.active:
+            qs = Rating.objects.filter(
+                content_type=instance.content_type,
+                object_id=instance.object_id,
+                user=instance.user
+            ).exclude(id=_id, active=True)
+            if qs.exists():
+                qs = qs.exclude(active_update_timestamp__isnull=False)
+                qs.update(active=False, active_update_timestamp=timezone.now())
+            # qs.delete()
+
+
+post_save.connect(rating_post_save, sender=Rating)
