@@ -8,8 +8,9 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
-"""
 
+"""
+from decouple import config
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,10 +22,11 @@ DATA_DIR = BASE_DIR / 'data'
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5p$%1jcb&0a9=)$a@f=ogwf!14&2^^@&uf_-7nqigd0ykcf^f2'
+# SECRET_KEY = 'django-insecure-5p$%1jcb&0a9=)$a@f=ogwf!14&2^^@&uf_-7nqigd0ykcf^f2'
+SECRET_KEY = config('SECRET_KEY', default=None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DJANGO_DEBUG', default=0, cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -38,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_beat', # this is for the celery beat scheduler
-    'django_celery_results', # this is for the celery results backend
+    'django_celery_beat', # scheduler
+    'django_celery_results', # saves the results of the tasks
     'profiles',
     'movies',
     'ratings', 
@@ -58,7 +60,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'recommender_system.urls'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler' # this helps to store the schedule in the database by 
-CELERY_BROKER_URL = 'redis://localhost:1234'
+CELERY_BROKER_URL = config( 'CELERY_BROKER_REDIS_URL' , default='redis://localhost:6379') # this is the default value if we don't specify it in settings.py of django project
 CELERY_RESULT_BACKEND = 'django-db'
 
 
