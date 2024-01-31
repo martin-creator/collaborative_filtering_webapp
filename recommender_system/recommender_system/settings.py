@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat', # this is for the celery beat scheduler
+    'django_celery_results', # this is for the celery results backend
     'profiles',
     'movies',
     'ratings', 
@@ -53,7 +55,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'recommender_system.urls'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler' # this helps to store the schedule in the database by 
+CELERY_BROKER_URL = 'redis://localhost:1234'
+CELERY_RESULT_BACKEND = 'django-db'
 
 
 TEMPLATES = [
