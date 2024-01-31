@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites'
+    'django.contrib.sites',
     'django_celery_beat', # scheduler
     'django_celery_results', # saves the results of the tasks
     'allauth',
