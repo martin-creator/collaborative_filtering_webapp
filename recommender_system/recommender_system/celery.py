@@ -18,3 +18,11 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # The result backend can be used to store the results of of recommendations, so that we can retrieve them later.
 
 app.autodiscover_tasks()
+
+app.conf.beat_scheduler = {
+    "run_movie_rating_avg_every_30": {
+        'task': 'task_calculate_movie_ratings',
+        'schedule': 60 * 30, # 30 minutes
+        'kwargs': {'count': 20_000}
+}
+}
