@@ -6,6 +6,7 @@ from .models import Rating
 class RatingAdmin(admin.ModelAdmin):
     list_display = ['user', 'value', 'content_type', 'active']
     raw_id_fields = ['user']
+    search_fields = ['user__username']
     readonly_fields = ['content_type']
 
 
