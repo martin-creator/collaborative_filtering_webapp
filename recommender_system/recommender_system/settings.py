@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django_celery_beat', # scheduler
     'django_celery_results', # saves the results of the tasks
     'allauth',
+    'django_htmx',
     'allauth.account',
     'allauth.socialaccount',
     'profiles',
@@ -66,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 
