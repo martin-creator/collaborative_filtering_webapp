@@ -1,13 +1,16 @@
 import random
-from celery import shared_task
-from django.contrib.auth import get_user_model
-from movies.models import Movie
-from django.contrib.contenttypes.models import ContentType
-from .models import Rating, RatingChoice
-from django.db.models import Avg, Count
-from django.utils import timezone
 import time
 import datetime
+import decimal 
+from celery import shared_task
+from django.db.models import Avg, Count
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
+
+
+from movies.models import Movie
+from .models import Rating, RatingChoice
 
 User= get_user_model()
 
@@ -37,6 +40,8 @@ def generate_fake_reviews(count=100, users=10, null_avg=False):
         new_ratings.append(rating_obj.id)
     return new_ratings
 
+
+
 @shared_task(name='task_update_movie_ratings')
 def task_update_movie_ratings(object_id=None):
     start_time = time.time()
@@ -49,10 +54,12 @@ def task_update_movie_ratings(object_id=None):
         object_id = agg_rate['object_id']
         rating_avg = agg_rate['average']
         rating_count = agg_rate['count']
+        score = decimal.Decimal(rating_avg * rating_count * 1.0)
         qs = Movie.objects.filter(id=object_id)
         qs.update(
             rating_avg=rating_avg,
             rating_count=rating_count,
+            score=score,
             rating_last_updated=timezone.now()
         )
     total_time = time.time() - start_time
