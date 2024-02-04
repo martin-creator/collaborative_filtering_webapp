@@ -1,30 +1,33 @@
+from django.apps import apps
 from django.conf import settings
 from django.db import models
 from django.db.models import Avg
+from django.db.models.signals import post_save
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.signals import post_save
 from django.utils import timezone
-from django.apps import apps
 
+User = settings.AUTH_USER_MODEL # 'auth.User'
 
-# Create your models here.
+# user_obj = User.objects.first()
+# user_ratings = user_obj.rating_set.all()
 
-
-User = settings .AUTH_USER_MODEL # get the currently active user model,
+# rating_obj = Rating.objects.first()
+# user_obj = rating_obj.user
+# user_ratings = user_obj.rating_set.all()
 
 class RatingChoice(models.IntegerChoices):
-    ONE = 1
+    ONE = 1 
     TWO = 2
     THREE = 3
     FOUR = 4
     FIVE = 5
-    __empty__ = 'Rate this movie'
+    __empty__ = 'Rate this'
 
-class RatingQueryset(models.QuerySet):
+class RatingQuerySet(models.QuerySet):
     def avg(self):
         return self.aggregate(average=Avg('value'))['average']
-    
+
     def movies(self):
         Movie = apps.get_model('movies', 'Movie')
         ctype = ContentType.objects.get_for_model(Movie)
@@ -36,11 +39,11 @@ class RatingQueryset(models.QuerySet):
 
 class RatingManager(models.Manager):
     def get_queryset(self):
-        return RatingQueryset(self.model, using=self._db)
+        return RatingQuerySet(self.model, using=self._db)
     
     def movies(self):
         return self.get_queryset().movies()
-
+    
     def avg(self):
         return self.get_queryset().avg()
 
@@ -54,16 +57,16 @@ class Rating(models.Model):
     active_update_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    objects = RatingManager() # Rating.objects.all().rating()
+    objects = RatingManager()
 
     class Meta:
         ordering = ['-timestamp']
 
-    def __str__(self):
-        return f'{self.user.username} rated {self.movie.title} {self.stars} stars'
-    
+
+
 def rating_post_save(sender, instance, created, *args, **kwargs):
     if created:
+        Suggestion = apps.get_model('suggestions', 'Suggestion')
         _id = instance.id
         if instance.active:
             qs = Rating.objects.filter(
@@ -74,6 +77,18 @@ def rating_post_save(sender, instance, created, *args, **kwargs):
             if qs.exists():
                 qs = qs.exclude(active_update_timestamp__isnull=False)
                 qs.update(active=False, active_update_timestamp=timezone.now())
+            suggestion_qs = Suggestion.objects.filter(
+                content_type=instance.content_type,
+                object_id=instance.object_id,
+                user=instance.user,
+                did_rate=False,
+            )
+            if suggestion_qs.exists():
+                suggestion_qs.update(
+                    did_rate=True,
+                    did_rate_timestamp=timezone.now(),
+                    rating_value=instance.value,
+                )
             # qs.delete()
 
 
