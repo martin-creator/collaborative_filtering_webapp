@@ -7,3 +7,5 @@ python-decouple
 redis
 django-allauth
 django-htmx
+numpy
+pandas
