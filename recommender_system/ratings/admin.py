@@ -1,13 +1,11 @@
 from django.contrib import admin
-from .models import Rating
 
-# Register your models here.
+from .models import Rating 
 
 class RatingAdmin(admin.ModelAdmin):
-    list_display = ['user', 'value', 'content_type', 'active']
-    raw_id_fields = ['user']
+    list_display = ['content_object', 'user', 'value', 'active']
     search_fields = ['user__username']
-    readonly_fields = ['content_type']
-
+    raw_id_fields = ['user']
+    readonly_fields = ['content_object']
 
 admin.site.register(Rating, RatingAdmin)
