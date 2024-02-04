@@ -6,8 +6,8 @@ Build a recommendation engine using Django &amp; a Machine Learning technique ca
 
 1. Clone the project and make it your own. Use branch `start` initially so we can all start in the same place.
 ```bash
-git clone https://github.com/codingforentrepreneurs/recommender
-cd recommender
+git clone https://github.com/martin-creator/collaborative_filtering_webapp.git
+cd collaborative_filtering_webapp
 git checkout start
 rm -rf .git
 git init .
